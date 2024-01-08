@@ -1,0 +1,3 @@
+"0","dat_sleep_errors = metaumbrella::view.errors.umbrella(subset(dat_sleep, is.na(Discard)))"
+"2","Your dataset is well formatted.
+"

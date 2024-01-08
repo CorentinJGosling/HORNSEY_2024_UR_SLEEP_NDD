@@ -1,0 +1,4 @@
+"0","dat_asd_errors = metaumbrella::view.errors.umbrella(dat_asd)"
+"2","WARNING:
+- The confidence interval is not symmetric around the effect size (this is only a warning, not an error).
+"
