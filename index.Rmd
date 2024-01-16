@@ -7,51 +7,31 @@ output: html_document
 
 ```{r ech=FALSE, include=FALSE}
 library(tidyverse)
-dat_sleep = readxl::read_excel("D:/Downloads/Sleep disorder first_CURRENT - Extraction spreadsheet_08-01-2024.xlsx",
+dat_sleep = readxl::read_excel("FINAL_combined DISCA UR extraction spreadsheet_15-01-2024.xlsx",
                              sheet = 1) %>%
   filter(!is.na(author))
-dat_adhd = readxl::read_excel("D:/Downloads/ADHD first_CURRENT - Extraction spreadsheet_08-01-2024.xlsx",
-                             sheet = 1) %>%
-  filter(is.na(Discard))
-dat_asd = readxl::read_excel("D:/Downloads/ASD first_CURRENT - Extraction spreadsheet_08-01-2024.xlsx",
-                             sheet = 1)
+
+names(dat_sleep)[which(names(dat_sleep) == "factor")] <- "old_fact"
+names(dat_sleep)[which(names(dat_sleep) == "NEW FACTOR (homogeneised)")] <- "factor"
 ```
 
-# ASD
 ```{r}
-dat_asd_errors = metaumbrella::view.errors.umbrella(dat_asd)
+dat_errors = metaumbrella::view.errors.umbrella(dat_sleep)
+```
+
+```{r, eval=FALSE}
+res = metaumbrella::umbrella(dat_sleep, mult.level=TRUE)
+summary(res)
 ```
 
 ```{r, echo=FALSE}
 downloadthis::download_this(
-  dat_asd_errors,
-  output_name = "errors_asd",
+  dat_errors,
+  output_name = "errors",
   output_extension = ".xlsx",
-  button_label = "Download error/warning ASD data",
+  button_label = "Download error/warninga",
   button_type = "warning",
   has_icon = TRUE,
   icon = "fa fa-save"
 )
-```
-
-# ADHD
-```{r}
-dat_adhd_errors = metaumbrella::view.errors.umbrella(dat_adhd)
-```
-
-```{r, echo=FALSE}
-downloadthis::download_this(
-  dat_adhd_errors,
-  output_name = "errors_adhd",
-  output_extension = ".xlsx",
-  button_label = "Download error/warning ADHD data",
-  button_type = "warning",
-  has_icon = TRUE,
-  icon = "fa fa-save"
-)
-```
-
-# SLEEP
-```{r}
-dat_sleep_errors = metaumbrella::view.errors.umbrella(dat_sleep)
 ```
