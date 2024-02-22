@@ -8,21 +8,18 @@ output: html_document
 ```{r ech=FALSE, include=FALSE}
 library(tidyverse)
 library(metaumbrella)
-dat_sleep = readxl::read_excel("combined DISCA UR extraction spreadsheet_22-02-2024_checked errors.xlsx",
+dat_sleep = readxl::read_excel("combined DISCA UR extraction spreadsheet_18-01-2024 (2).xlsx",
                              sheet = 1) %>%
-  filter(!is.na(author) & is.na(Discard))
+  filter(!is.na(author))
 
-dat_sleep$factor = dat_sleep$Factor
-dat_sleep = subset(dat_sleep, select=-c(Factor))
-colnames(dat_sleep)[2] <- "Pop"
 dat_fact = dat_sleep %>%
   group_by(factor) %>%
-  slice(1)
+  slice(1) 
 
-colnames(dat_fact)[c(4, 8, 11)] <- c("Population", "Intervention", "Outcome")
-
-dat_fact_rest = dat_fact %>%
+colnames(dat_fact)[c(2, 6, 8)] <- c("Population", "Intervention", "Outcome")
+dat_fact = dat_fact %>%
   select(factor, Population, Intervention, Outcome)
+
 ```
 
 ```{r}
@@ -69,33 +66,25 @@ DT::datatable(summary(evid),
 ```
 
 
-```{r, fig.width=12, fig.height=45}
+```{r}
 sum_evid = summary(evid)
  
 sum_evid$I2 = as.numeric(sum_evid$I2)
 sum_evid$factor = sum_evid$Factor
-dat_plot = left_join(sum_evid, dat_fact_rest)
-
-dat_plot$Population = substr(dat_plot$Population, 1, 20) 
-dat_plot$Intervention = substr(dat_plot$Intervention, 1, 20) 
-dat_plot$Outcome = substr(dat_plot$Outcome, 1, 20) 
-dat_plot$Factor = substr(dat_plot$Factor, 1, 30) 
-
+dat_plot = left_join(sum_evid, dat_fact)
+dat_plot$Factor = substr(dat_plot$Factor, 1, 20)  
 forest(dat_plot,
        layout = "RevMan5",
-       subgroup = "Intervention",
-       subgroup.name = "Intervention",
-      leftcols = c("Population", 
-                   "Outcome", "total_n", "Factor",
-                   "effect.ci"),
-       leftlabs = c("Population", 
-                    "Outcome", "n-sample", "Factor",
-                    "eSMD + 95% CI")
+       subgroup = "Class",
+       subgroup.name = "Class",
+      leftcols = c("Population", "Intervention", "Outcome", "Class", "n_studies", "total_n",  "effect.ci"),
+       leftlabs = c("Population", "Intervention", "Outcome", "Class", "n-studies", "n-sample", 
+                    "eSMD + 95% CI"),
 )
 
 ```
 
-```{r, eval=FALSE}
+```{r, echo=FALSE}
 downloadthis::download_this(
   dat_errors,
   output_name = "errors",
