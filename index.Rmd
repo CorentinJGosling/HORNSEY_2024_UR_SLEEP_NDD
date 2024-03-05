@@ -74,7 +74,7 @@ DT::datatable(summary(evid),
 ```
 
 # Forest (objective)
-```{r, fig.width=12, fig.height=45}
+```{r, fig.width=12, fig.height=10}
 sum_evid = summary(evid)
  
 sum_evid$I2 = as.numeric(sum_evid$I2)
@@ -86,6 +86,7 @@ dat_plot$Intervention = substr(dat_plot$Intervention, 1, 20)
 dat_plot$Outcome = substr(dat_plot$Outcome, 1, 20) 
 dat_plot$Factor = substr(dat_plot$Factor, 1, 30)
 dat_plot = dat_plot[order(dat_plot$Population),]
+dat_plot = dat_plot %>% filter(n_studies > 1)
 forest(dat_plot %>% filter(grepl("Objective", Type_outcome, fixed=TRUE)),
        layout = "RevMan5",
        subgroup = "Intervention",
@@ -102,7 +103,7 @@ forest(dat_plot %>% filter(grepl("Objective", Type_outcome, fixed=TRUE)),
 
 
 # Forest (Subjective)
-```{r, fig.width=12, fig.height=45}
+```{r, fig.width=12, fig.height=15}
 forest(dat_plot %>% filter(grepl("Subjective", Type_outcome, fixed=TRUE)),
        layout = "RevMan5",
        subgroup = "Intervention",
