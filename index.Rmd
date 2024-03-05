@@ -37,31 +37,30 @@ dat_errors = metaumbrella::view.errors.umbrella(dat_sleep)
 ```{r}
 res = umbrella(dat_sleep, mult.level=TRUE,
                verbose = FALSE)
-
-DT::datatable(summary(res), 
-              rownames = FALSE,
-              options = list(  # options
-                scrollX = TRUE,
-                dom = c('ft'), 
-                scrollY = "600px", 
-                pageLength = 600,
-                autoWidth = TRUE,
-                columnDefs = list(
-                  list(width = '110px',
-                       targets = "_all"),
-                  list(className = 'dt-center', 
-                       targets = "_all"))))
-
 ```
 
 ```{r}
 evid = add.evidence(res, criteria="GRADE")
+sum_evid = summary(evid)
+sum_evid$I2 = as.numeric(sum_evid$I2)
+sum_evid$factor = sum_evid$Factor
+dat_plot = left_join(sum_evid, dat_fact_rest)
 
-DT::datatable(summary(evid), 
+dat_plot$Population = substr(dat_plot$Population, 1, 20) 
+dat_plot$Intervention = substr(dat_plot$Intervention, 1, 20) 
+dat_plot$Outcome = substr(dat_plot$Outcome, 1, 20) 
+# dat_plot$Factor = substr(dat_plot$Factor, 1, 30)
+# dat_plot = dat_plot[order(dat_plot$Population),]
+dat_plot = dat_plot[order(dat_plot$Outcome),]
+dat_plot = dat_plot %>% filter(n_studies > 1)
+
+
+DT::datatable(dat_plot, 
               rownames = FALSE,
               options = list(  # options
                 scrollX = TRUE,
-                dom = c('ft'), 
+                dom = c('ftB'), 
+                buttons = c('copy', 'csv', 'excel', 'pdf'),
                 scrollY = "600px", 
                 pageLength = 600,
                 autoWidth = TRUE,
@@ -75,28 +74,19 @@ DT::datatable(summary(evid),
 
 # Forest (objective)
 ```{r, fig.width=12, fig.height=10}
-sum_evid = summary(evid)
  
-sum_evid$I2 = as.numeric(sum_evid$I2)
-sum_evid$factor = sum_evid$Factor
-dat_plot = left_join(sum_evid, dat_fact_rest)
-
-dat_plot$Population = substr(dat_plot$Population, 1, 20) 
-dat_plot$Intervention = substr(dat_plot$Intervention, 1, 20) 
-dat_plot$Outcome = substr(dat_plot$Outcome, 1, 20) 
-dat_plot$Factor = substr(dat_plot$Factor, 1, 30)
-dat_plot = dat_plot[order(dat_plot$Population),]
-dat_plot = dat_plot %>% filter(n_studies > 1)
 forest(dat_plot %>% filter(grepl("Objective", Type_outcome, fixed=TRUE)),
        layout = "RevMan5",
        subgroup = "Intervention",
        subgroup.name = "Intervention",
-      leftcols = c("Population", 
-                   "Outcome", "n_studies", "total_n", "I2", "Class",
-                   "effect.ci"),
-       leftlabs = c("Population", 
-                    "Outcome", "n-studies", "n-sample", "I2", "Class",
-                    "eSMD + 95% CI")
+            leftcols = c("Factor"),
+       leftlabs = c("Factor")
+# leftcols = c("Population", 
+      #              "Outcome", "n_studies", "total_n", "I2", "Class",
+      #              "effect.ci"),
+      #  leftlabs = c("Population", 
+      #               "Outcome", "n-studies", "n-sample", "I2", "Class",
+      #               "eSMD + 95% CI")
 )
 
 ```
@@ -109,12 +99,15 @@ forest(dat_plot %>% filter(grepl("Subjective", Type_outcome, fixed=TRUE)),
        subgroup = "Intervention",
        subgroup.name = "Intervention",
        order = "Class",
-      leftcols = c("Population", 
-                   "Outcome", "n_studies", "total_n", "I2", "Class",
-                   "effect.ci"),
-       leftlabs = c("Population", 
-                    "Outcome", "n-studies", "n-sample", "I2", "Class",
-                    "eSMD + 95% CI")
+       leftcols = c("Factor"),
+       leftlabs = c("Factor")
+
+      # leftcols = c("Population", 
+      #              "Outcome", "n_studies", "total_n", "I2", "Class",
+      #              "effect.ci"),
+      #  leftlabs = c("Population", 
+      #               "Outcome", "n-studies", "n-sample", "I2", "Class",
+      #               "eSMD + 95% CI")
 )
 
 ```
